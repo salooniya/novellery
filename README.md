@@ -1,4 +1,8 @@
 # Novellery
-Official repo of novellery web app.
+A web app to read what you love.
 
-# © All rights reserved.
+# Information
+
+This is the offical repository of Novellery Web App.
+
+© All rights reserved.
