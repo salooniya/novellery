@@ -4,7 +4,7 @@ const farmyLoaderPath = path.resolve(require.resolve('farmy'), '../workers/farmy
 module.exports = {
     mode: 'development',
     entry: {
-        app: './src/init.fy'
+        app: './src/index.fy'
     },
     output: {
         filename: '[name].js',

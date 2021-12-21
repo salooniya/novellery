@@ -4,7 +4,7 @@ const farmyLoaderPath = path.resolve(require.resolve('${pkgName}'), '../workers/
 module.exports = {
     mode: 'production',
     entry: {
-        app: './src/app.js'
+        app: './src/index.js'
     },
     output: {
         filename: '[name].fy',

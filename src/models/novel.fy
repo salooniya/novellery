@@ -1,6 +1,6 @@
 import app from "../app.fy";
 
-const fillDB = async (collection, n, db) => {
+const fillDB = async function (collection, n, db) {
     for (let i = 0; i < n; i++) {
         await collection.create({
             title: `Title ${i}`,
