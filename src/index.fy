@@ -1,10 +1,10 @@
 import app from './app.fy';
 import NovelRouter from './routers/novel';
-import AppRouter from './routers/app';
+import IndexRouter from './routers/index';
 
 // create router routes
 app:router.route('/novels', NovelRouter);
-app:router.route('/', AppRouter);
+app:router.route('/', IndexRouter);
 
 // run app router
 app:router.run();
