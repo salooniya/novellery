@@ -1,6 +1,4 @@
 import { State, Router, Component, View, $ } from 'farmy';
-import NovelRouter from './routers/novel';
-import AppRouter from './routers/app';
 
 // create app state
 const app = new State();
@@ -29,15 +27,5 @@ app:db = new State.LocalDB(app:name);
 app:db.novels = app:db.collection('novels');
 app:db.chapters = app:db.collection('chapters');
 app:db.users = app:db.collection('users');
-
-import NovelRouter from './routers/novel';
-import AppRouter from './routers/app';
-
-// create router routes
-app:router.route('/novels', NovelRouter);
-app:router.route('/', AppRouter);
-
-// run router
-app:router.run();
 
 export default app;
