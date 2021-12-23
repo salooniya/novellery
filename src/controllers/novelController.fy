@@ -1,6 +1,8 @@
-import { View } from 'farmy';
+import { View, $, Router } from 'farmy';
 import app from '../app.fy';
 import * as NovelModel from '../models/novelModel.fy';
+import * as UserModel from '../models/userModel.fy';
+import * as ChapterModel from '../models/chapterModel.fy';
 
 const headerView = new View(/*html*/`
     <header>
@@ -50,30 +52,62 @@ export const novels = async function () {
 const novelView = new View(/*html*/`
     ${headerView.template}
     <section class="novel-view">
-        <h2>📘 [title]</h2>
+        <div class="flex-row">
+            <h2>📘 [title]</h2>
+            <button class="left-margin [isSubscribed]">[isSubscribed]</button>
+        </div>
         <hr>
         <div class="text-box">
-            <p>✍ [authorID]</p>
+            <a href="/authors/[authorID]">✍ [author]</a>
             <p>⭐ [ratings]</p>
             <p>👥 [subscribers]</p>
             <p>🧬 [genrePrimary], [genreSecondary]</p>
-            <p>📖 [chaptersID]</p>
+        </div>
+        <div class="flex-row">
+            <h2>📖 Chapters</h2>
+        </div>
+        <hr>
+        <div class="text-box">
+            [chapters]
+            (<a href="/chapters/[ID]">📄 [chapterTitle]</a><br>)
         </div>
     </section>
 `);
 
 export const novelByID = async function (req) {
-    const user = await app:db.index.get('user');
-    const novel = await NovelModel.getOne(req.params.novelID);
+    let user = await app:db.index.get('user');
+    let novel = await NovelModel.getOne(req.params.novelID);
     console.log(novel);
+    console.log(user);
+
+    const chapters = [];
+    for (const chapterID of novel.chaptersID) {
+        const chapter = await ChapterModel.getOne(chapterID);
+        chapters.push(chapter);
+    }
+
+    const author = (await UserModel.getOne(novel.authorID)).fullname;
 
     const view = novelView.get({
         appName: app:name,
         'user-nav-1': user ? `<a href="/users/${user.ID}">🙍‍♂️ USER</a>` : `<a href="/signup">😄 SIGNUP</a>`,
         'user-nav-2': user ? `` : `<a href="/login">😃 LOGIN</a>`,
+        isSubscribed: user.subscribedNovelsID.includes(novel.ID) ? 'unsubscribe' : 'subscribe',
+        chapters,
+        author,
         ... novel
     });
     app:root.innerHTML(view);
+
+    const $novelView = $('section.novel-view');
+    $novelView.$('.subscribe').on('click', async function () {
+        await UserModel.subscribeNovel(user.ID, novel.ID);
+        app:router.run();
+    });
+    $novelView.$('.unsubscribe').on('click', async function () {
+        await UserModel.unsubscribeNovel(user.ID, novel.ID);
+        app:router.run();
+    });
 };
 
 export const novelChapters = async function () {

@@ -1,6 +1,7 @@
 import { View } from 'farmy';
 import app from '../app.fy';
 import * as ChapterModel from '../models/chapterModel.fy';
+import * as NovelModel from '../models/novelModel.fy';
 
 const headerView = new View(/*html*/`
     <header>
@@ -50,7 +51,7 @@ const chapterView = new View(/*html*/`
         <h2>📄 [chapterTitle]</h2>
         <hr>
         <div class="text-box">
-            <p>📘 [novelID]</p>
+            <a href="/novels/[novelID]">📘 [novelTitle]</a>
             <p>🖤 [likes]</p>
             <p>📰 [body]</p>
         </div>
@@ -62,10 +63,13 @@ export const chapterByID = async function (req) {
     const chapter = await ChapterModel.getOne(req.params.chapterID);
     console.log(chapter);
 
+    const novelTitle = (await NovelModel.getOne(chapter.novelID)).title;
+
     const view = chapterView.get({
         appName: app:name,
         'user-nav-1': user ? `<a href="/users/${user.ID}">🙍‍♂️ USER</a>` : `<a href="/signup">😄 SIGNUP</a>`,
         'user-nav-2': user ? `` : `<a href="/login">😃 LOGIN</a>`,
+        novelTitle,
         ... chapter
     });
     app:root.innerHTML(view);

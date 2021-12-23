@@ -42,8 +42,8 @@ export const getAll = async function () {
 };
 
 export const getOne = async function (ID) {
-    const doc = await app:db.users.get(ID);
-    return doc;
+    const user = await app:db.users.get(ID);
+    return user;
 };
 
 export const getOneByUsername = async function (username) {
@@ -76,18 +76,48 @@ export const deleteOne = async function (ID) {
 };
 
 export const subscribeNovel = async function (userID, novelID) {
-    const user = await app:db.users.get(userID);
-    user.subscribedNovels.unshift(novelID);
-    app:db.save();
-    return user;
+    const user = await getOne(userID);
+    const novel = await NovelModel.getOne(novelID);
+    if (!user || !novel) throw Error('not found');
+
+    user.subscribedNovelsID.unshift(novel.ID);
+    novel.subscribers = novel.subscribers + 1;
+    await app:db.save();
 };
 
 export const unsubscribeNovel = async function (userID, novelID) {
-    const user = await app:db.users.get(userID);
-    const indexOfNovelID = user.subscribedNovels.indexOf(novelID);
-    user.subscribedNovels.splice(indexOfNovelID, 1);
+    const user = await getOne(userID);
+    const novel = await NovelModel.getOne(novelID);
+    if (!user || !novel) throw Error('not found');
+
+    const indexOfNovelID = user.subscribedNovelsID.indexOf(novel.ID);
+    user.subscribedNovelsID.splice(indexOfNovelID, 1);
+    novel.subscribers = novel.subscribers - 1;
+
+    await app:db.save();
+};
+
+export const signup = async function (user) {
+
+    if (!user.agreeCheck) return;
+    if (user.password !== user.confirmPassword) return;
+
+    const usernameExists = await getOneByUsername(username);
+    if (usernameExists) return;
+
+    const newUser = await postOne({
+        username: user.username,
+        fullname: user.fullname,
+        password: user.password,
+        email: user.email,
+        gender: user.gender,
+        createdNovelsID: [],
+        subscribedNovelsID: []
+    });
+
+    await app:db.index.set('user', newUser);
     app:db.save();
-    return user;
+    return newUser;
 };
 
 export const login = async function (username, password) {

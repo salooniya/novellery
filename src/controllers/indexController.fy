@@ -28,6 +28,7 @@ const homeView = new View(/*html*/`
 export const home = async function () {
     const user = await app:db.index.get('user');
     console.log(user);
+    window.db = app:db;
 
     const view = homeView.get({
         appName: app:name,
@@ -94,6 +95,34 @@ export const signup = async function () {
         'user-nav-2': `<a href="/login">😃 LOGIN</a>`
     });
     app:root.innerHTML(view);
+
+    const $signupViewForm = $('section.signup-view form');
+
+    $signupViewForm.on('submit', async (e) => {
+        e.preventDefault();
+        const username = $signupViewForm.$('#username').value();
+        const fullname = $signupViewForm.$('#fullname').value();
+        const email = $signupViewForm.$('#email').value();
+        const password = $signupViewForm.$('#password').value();
+        const confirmPassword = $signupViewForm.$('#confirm-password').value();
+        const gender = $signupViewForm.$('#gender').value();
+        const agreeCheck = $signupViewForm.$('#agree').el.checked;
+
+        const newUser = await UserModel.signup({
+            username,
+            fullname,
+            email,
+            password,
+            confirmPassword,
+            gender,
+            agreeCheck
+        });
+
+        if (newUser) {
+            app:router.run('/')
+            history.replaceState(null, null, '/');
+        }
+    });
 };
 
 const loginView = new View(/*html*/`
