@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/salooniya/novellery#readme",
   "dependencies": {
-    "farmy": "^0.20.24"
+    "farmy": "^0.20.26"
   }
 }
