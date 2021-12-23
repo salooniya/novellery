@@ -32,7 +32,7 @@ export const home = async function () {
     const view = homeView.get({
         appName: app:name,
         'user-nav-1': user ? `<a href="/users/${user.ID}">🙍‍♂️ USER</a>` : `<a href="/signup">😄 SIGNUP</a>`,
-        'user-nav-2': user ? `<a href="/logout">😕 LOGOUT</a>` : `<a href="/login">😃 LOGIN</a>`
+        'user-nav-2': user ? `` : `<a href="/login">😃 LOGIN</a>`
     });
     app:root.innerHTML(view);
 };
@@ -183,8 +183,12 @@ const lostView = new View(/*html*/`
 
 
 export const lost = async function () {
+    const user = await app:db.index.get('user');
+
     const view = lostView.get({
-        appName: app:name
+        appName: app:name,
+        'user-nav-1': user ? `<a href="/users/${user.ID}">🙍‍♂️ USER</a>` : `<a href="/signup">😄 SIGNUP</a>`,
+        'user-nav-2': user ? `` : `<a href="/login">😃 LOGIN</a>`
     });
     app:root.innerHTML(view);
 };

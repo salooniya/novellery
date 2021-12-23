@@ -6,8 +6,8 @@ const headerView = new View(/*html*/`
     <header>
         <h1><a href="/">[appName]</a></h1>
         <nav>
-            <a href="/login">😃 LOGIN</a>
-            <a href="/signup">😄 SIGNUP</a>
+            [user-nav-1]
+            [user-nav-2]
         </nav>
     </header>
 `);
@@ -31,12 +31,15 @@ const chaptersView = new View(/*html*/`
 `);
 
 export const chapters = async function () {
+    const user = await app:db.index.get('user');
     const chapters = await ChapterModel.getAll();
     console.log(chapters);
 
     const view = chaptersView.get({
         appName: app:name,
-        chapters
+        chapters,
+        'user-nav-1': user ? `<a href="/users/${user.ID}">🙍‍♂️ USER</a>` : `<a href="/signup">😄 SIGNUP</a>`,
+        'user-nav-2': user ? `` : `<a href="/login">😃 LOGIN</a>`
     });
     app:root.innerHTML(view);
 };
@@ -55,11 +58,14 @@ const chapterView = new View(/*html*/`
 `);
 
 export const chapterByID = async function (req) {
+    const user = await app:db.index.get('user');
     const chapter = await ChapterModel.getOne(req.params.chapterID);
     console.log(chapter);
 
     const view = chapterView.get({
         appName: app:name,
+        'user-nav-1': user ? `<a href="/users/${user.ID}">🙍‍♂️ USER</a>` : `<a href="/signup">😄 SIGNUP</a>`,
+        'user-nav-2': user ? `` : `<a href="/login">😃 LOGIN</a>`,
         ... chapter
     });
     app:root.innerHTML(view);

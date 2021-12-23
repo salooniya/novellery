@@ -6,8 +6,8 @@ const headerView = new View(/*html*/`
     <header>
         <h1><a href="/">[appName]</a></h1>
         <nav>
-            <a href="/login">😃 LOGIN</a>
-            <a href="/signup">😄 SIGNUP</a>
+            [user-nav-1]
+            [user-nav-2]
         </nav>
     </header>
 `);
@@ -34,11 +34,14 @@ const usersView = new View(/*html*/`
 `);
 
 export const users = async function () {
+    const user = await app:db.index.get('user');
     const users = await UserModel.getAll();
     console.log(users);
 
     const view = usersView.get({
         appName: app:name,
+        'user-nav-1': user ? `<a href="/users/${user.ID}">🙍‍♂️ USER</a>` : `<a href="/signup">😄 SIGNUP</a>`,
+        'user-nav-2': user ? `` : `<a href="/login">😃 LOGIN</a>`,
         users
     });
     app:root.innerHTML(view);
@@ -75,6 +78,8 @@ export const userByID = async function (req) {
 
     const view = userView.get({
         appName: app:name,
+        'user-nav-1': ``,
+        'user-nav-2': `<a href="/logout">😕 LOGOUT</a>`,
         ... user
     });
     app:root.innerHTML(view);
